@@ -4,9 +4,9 @@ import { View, Button, Text, Image, Swiper, SwiperItem, ScrollView, PickerView, 
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
+import { apiHost } from '@api/request'
 
 import './index.styl'
-const apiHost = ''
 
 // #region 书写注意
 //
@@ -364,8 +364,7 @@ class Index extends Component {
   }
 
   render () {
-    const animationData = this
-    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft } = this.state
+    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint } = this.state
     return (
       <View className='index'>
 
@@ -444,57 +443,77 @@ class Index extends Component {
           </ScrollView>
         </View>
 
-        <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close2"></View>
-        <View className="sleep">
-          <Image src='../../assets/images/sleep.png'></Image>
-        </View>
+        {
+          showSleepStatus &&
+          <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close2"></View>
+        }
+        {
+          showSleepStatus &&
+          <View className="sleep">
+            <Image src='../../assets/images/sleep.png'></Image>
+          </View>
+        }
 
         {/* 优惠券领取弹窗 */}
-        <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close"></View>
-        <Image  className='logor' src='../../assets/images/logor.png'></Image>
-        <View className="drawer_box_ad" style={{left: `${adleft}`}}>
-          <View className="drawer_content_ad">
-            <View className='reduction'>
-              <View className='money'>
-                {reList[0].cut}<Text>元</Text>
-              </View>
-              <View className='content'>
-                <View className='desc'>
-                  <Text>{reList[0].typeDes}</Text>
-                </View>
-                <View className="date">
-                  有效期至：{reList[0].endDate}
-                </View>
-                <View className="note">本券不与单品优惠券通用</View>
-              </View>
-              <View className='btn'>
-                <Text className="btn-ok" data-reduction={reList[0].id} onClick={this.getCut}>领取</Text>
-                <Text className="btn-ok">已领取</Text>
-              </View>
-            </View>
-          </View>
-          <View className="drawer_content_ad">
-            <View className='reduction'>
-              <View className='money'>
-                {reList[1].cut}<Text>元</Text>
-              </View>
-              <View className='content'>
-                <View className='desc'>
-                  <Text>{reList[1].typeDes}</Text>
-                </View>
-                <View className="date">
-                  有效期至：{reList[1].endDate}
-                </View>
-                <View className="note">
-                  本券不与满减优惠券通用
+        {
+          showAdStatus &&
+          <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close"></View>
+        }
+        {
+          showAdStatus &&
+          <Image  className='logor' src='../../assets/images/logor.png'></Image>
+        }
+        {
+          showAdStatus &&
+          <View className="drawer_box_ad" style={{left: `${adleft}`}}>
+            {
+              reList[0].isR === 0 &&
+              <View className="drawer_content_ad">
+                <View className='reduction'>
+                  <View className='money'>
+                    {reList[0].cut}<Text>元</Text>
+                  </View>
+                  <View className='content'>
+                    <View className='desc'>
+                      <Text>{reList[0].typeDes}</Text>
+                    </View>
+                    <View className="date">
+                      有效期至：{reList[0].endDate}
+                    </View>
+                    <View className="note">本券不与单品优惠券通用</View>
+                  </View>
+                  <View className='btn'>
+                    <Text className="btn-ok" data-reduction={reList[0].id} onClick={this.getCut}>领取</Text>
+                    <Text className="btn-ok">已领取</Text>
+                  </View>
                 </View>
               </View>
-              <View className='btn'>
-                <Text className="btn-ok" data-reduction={reList[1].id} onClick={this.getCut}>领取</Text>
-                <Text className="btn-ok">已领取</Text>
+            }
+            {
+              reList[1].isR === 0 &&
+              <View className="drawer_content_ad">
+                <View className='reduction'>
+                  <View className='money'>
+                    {reList[1].cut}<Text>元</Text>
+                  </View>
+                  <View className='content'>
+                    <View className='desc'>
+                      <Text>{reList[1].typeDes}</Text>
+                    </View>
+                    <View className="date">
+                      有效期至：{reList[1].endDate}
+                    </View>
+                    <View className="note">
+                      本券不与满减优惠券通用
+                    </View>
+                  </View>
+                  <View className='btn'>
+                    <Text className="btn-ok" data-reduction={reList[1].id} onClick={this.getCut}>领取</Text>
+                    <Text className="btn-ok">已领取</Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
+            }
           <View className="btn" data-type='2' onClick={this.powerDrawer} data-statu="close">
             <Text className="btn-ok">一键领取</Text>
           </View>
@@ -502,9 +521,15 @@ class Index extends Component {
             点击领取后，可在小程序内，“我的” －“我的优惠券”中查看
           </View>
         </View>
+        }
 
-        <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close3"></View>
-        <View style='position:absolute;bottom:0px;width:100%;z-index:9999'>
+        {
+          showAppointStatus &&
+          <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close3"></View>
+        }
+        {
+          isAppoint &&
+          <View style='position:absolute;bottom:0px;width:100%;z-index:9999'>
           <View className='timepick'>
             <View style='color:#999' onClick={this.closeAP}>取消</View>
             请选择预约取餐时间
@@ -519,6 +544,7 @@ class Index extends Component {
           </PickerView>
         </View>
 
+        }
       </View>
     )
   }

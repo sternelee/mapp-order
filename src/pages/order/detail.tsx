@@ -4,10 +4,10 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
+import { apiHost } from '@api/request'
 
 import './detail.styl'
 
-const apiHost = ''
 
 // #region 书写注意
 //

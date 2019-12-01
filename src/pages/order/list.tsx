@@ -4,10 +4,9 @@ import { View, Button, Text, Image } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
+import { apiHost } from '@api/request'
 
 import './list.styl'
-
-const apiHost = ''
 
 // #region 书写注意
 //

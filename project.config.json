@@ -2,7 +2,7 @@
   "miniprogramRoot": "./dist",
   "projectname": "mapp-order",
   "description": "点餐小程序",
-  "appid": "touristappid",
+  "appid": "wx1b925896c27d57ba",
   "setting": {
     "urlCheck": true,
     "es6": false,

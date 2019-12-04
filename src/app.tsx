@@ -27,7 +27,12 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/list/index',
+      'pages/cut/index',
+      'pages/order/list',
+      'pages/order/balance',
+      'pages/order/detail'
     ],
     window: {
       backgroundTextStyle: 'light',

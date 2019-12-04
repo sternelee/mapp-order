@@ -69,10 +69,10 @@ class Index extends Component {
   state = {
     //轮播图
     imgUrls: [
-      "http://cdn.handsomebird.xin/ncsf/lunbo/v1/lunbo1.png",
-      "http://cdn.handsomebird.xin/ncsf/lunbo/v1/lunbo2.png",
-      "http://cdn.handsomebird.xin/ncsf/lunbo/v1/lunbo3.png",
-      "http://cdn.handsomebird.xin/ncsf/lunbo/v1/lunbo4.png",
+      "cloud://leeapps-b71pw.6c65-leeapps-b71pw-1255591994/93616-59a6322460ae0.jpg",
+      "cloud://leeapps-b71pw.6c65-leeapps-b71pw-1255591994/93616-59a6322460ae0.jpg",
+      "cloud://leeapps-b71pw.6c65-leeapps-b71pw-1255591994/93616-59a6322460ae0.jpg",
+      "cloud://leeapps-b71pw.6c65-leeapps-b71pw-1255591994/93616-59a6322460ae0.jpg",
     ],
     logo:'../../assets/images/logo.png',
     indicatorDots: true,
@@ -85,12 +85,14 @@ class Index extends Component {
     showAppointStatus: false,
     adleft: "7%",
     array: [],
-    reList:[],
+    reList: [],
     isiphonex:false,
     isAppoint:false,
     sleep:false,
     appointTime:""
   }
+
+  animation: Taro.Animation
 
   componentWillReceiveProps (nextProps) {
     console.log(this.props, nextProps)
@@ -128,7 +130,7 @@ class Index extends Component {
         })
     }else{
       Taro.navigateTo({
-        url: '../list/list?model=0'
+        url: '../list/index?model=0'
       })
     }
   }
@@ -146,7 +148,7 @@ class Index extends Component {
       success: function (res) {
         var openTime = res.data.data.openTime
         var closeTime = res.data.data.closeTime
-        var timeRange = [];
+        var timeRange: string[] = [];
         var d = new Date();
         var now_h = d.getHours()
         var now_m = d.getMinutes()
@@ -169,7 +171,7 @@ class Index extends Component {
         } else {
           //处于营业时间则需提前半小时
           console.log(now_m)
-          now_m = parseInt(now_m / 10) + 3
+          now_m = parseInt(String(now_m / 10)) + 3
           console.log(now_m)
           if (now_m > 5) {
             now_m = (now_m - 6) * 10
@@ -204,7 +206,7 @@ class Index extends Component {
     Taro.navigateTo({
       url: '../mine/mine'
     })
-  },
+  }
   letAppoint () {
     this.setState({
       isAppoint:true,
@@ -364,7 +366,7 @@ class Index extends Component {
   }
 
   render () {
-    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint } = this.state
+    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime } = this.state
     return (
       <View className='index'>
 
@@ -401,7 +403,7 @@ class Index extends Component {
           </View>
           <View className='oplist-item' onClick={this.goOrderlist}>
             <View>
-              <Image src='../../assets/images/order.png'></I>
+              <Image src='../../assets/images/order.png'></Image>
             </View>
             <View className='name'>
               <Text>订单列表</Text>
@@ -535,7 +537,7 @@ class Index extends Component {
             请选择预约取餐时间
             <View onClick={this.goAppoint}>确定</View>
           </View>
-          <PickerView indicatorStyle="height: 50px;text-align:center" style="width: 100%; height: 300px;background:white" value={} onChange={this.bindPickerChange}>
+          <PickerView indicatorStyle="height: 50px;text-align:center" style="width: 100%; height: 300px;background:white" value={[]} onChange={this.bindPickerChange}>
             <PickerViewColumn>
               {
                 array.map((item, index) => <View style="line-height: 50px;text-align:center">{item}</View>)

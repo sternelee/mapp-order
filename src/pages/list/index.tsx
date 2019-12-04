@@ -191,7 +191,7 @@ class Index extends Component {
     var index = e.currentTarget.dataset.index;
     var a = this.state;
     var tem = a.listData[type].foods[index].tem;
-    var temBox = [];
+    var temBox: any[] = [];
     for (let i = 0; i < tem.length; i++) {
       temBox.push(tem[i].specs)
     }
@@ -217,7 +217,7 @@ class Index extends Component {
     var type = e.currentTarget.dataset.type;
     if (type == 0) {
       var item = a[this.state.currentType].foods[this.state.currentIndex].size
-      var sizeBox = this.state.sizeBox;
+      var sizeBox: any[] = this.state.sizeBox;
       var sizeEx = this.state.sizeEx;
       if (item[index].packing_fee == 0) {
         item[index].packing_fee = 1
@@ -261,12 +261,13 @@ class Index extends Component {
         return i
       }
     }
+    return 0
   }
   //加入购物车
   addToCart () {
     var a = this.state
     var listData = a.listData;
-    var cartList = this.state.cartList;
+    var cartList: any[] = this.state.cartList;
     if (this.isSameAdd() != undefined) {
       console.log("添加过")
       cartList[this.isSameAdd()].number += 1
@@ -415,7 +416,7 @@ class Index extends Component {
                       return (
                         <View className='content-list' key="unique">
                           <View className='list-image-box'>
-                            <Image className="list-image" mode="widthFix" src='{{"http://cdn.handsomebird.xin/t"+items.type+"-"+items.img+".jpg?imageView2/2/w/144/h/144/format/png/q/75|watermark/2/text/5aWI6Iy25rC05bOw/font/5a6L5L2T/fontsize/240/fill/I0ZGRkZGRg==/dissolve/100/gravity/NorthEast/dx/5/dy/5|imageslim"}}' lazy-load></Image>
+                            <Image className="list-image" mode="widthFix" src='' lazy-load></Image>
                           </View>
                           <View className='issue-name'>
                             <View>{ items.name }</View>

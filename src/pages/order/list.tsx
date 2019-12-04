@@ -191,7 +191,7 @@ getMyAppoint = () => {
               return (
                 <View className="card" id={`a${index}`}>
                   <View className='info'>
-                    <Image style='border-radius:5px' src='{{"http://cdn.handsomebird.xin/t"+item.cartList[0].img+".jpg?imageView2/2/w/144/h/144/format/png/q/75|watermark/2/text/5aWI6Iy25rC05bOw/font/5a6L5L2T/fontsize/240/fill/I0ZGRkZGRg==/dissolve/100/gravity/NorthEast/dx/5/dy/5|imageslim"}}'
+                    <Image style='border-radius:5px' src=''
                       lazyLoad></Image>
                     <View className='detail'>
                       <View style='padding:5px'>

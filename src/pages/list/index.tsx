@@ -112,7 +112,7 @@ class Index extends Component {
     //   })
     // }
     // var that = this;
-    // this.getList()
+    this.getList()
   }
 
   getList() {
@@ -187,6 +187,7 @@ class Index extends Component {
    * 生命周期函数--监听页面初次渲染完成
    */
   selectInfo = (e) => {
+    console.log(e)
     var type = e.currentTarget.dataset.type;
     var index = e.currentTarget.dataset.index;
     var a = this.state;
@@ -268,7 +269,7 @@ class Index extends Component {
     var a = this.state
     var listData = a.listData;
     var cartList: any[] = this.state.cartList;
-    if (this.isSameAdd() != undefined) {
+    if (this.isSameAdd() !== 0) {
       console.log("添加过")
       cartList[this.isSameAdd()].number += 1
     } else {
@@ -342,8 +343,8 @@ class Index extends Component {
   decNumber (e) {
     var index = e.currentTarget.dataset.index;
     console.log(index)
-    var cartList = this.state.cartList;
-    var listData = this.state.listData
+    var cartList: any[] = this.state.cartList;
+    var listData: any[] = this.state.listData
     listData[cartList[index].cType].foods[cartList[index].cIndex].num = listData[cartList[index].cType].foods[cartList[index].cIndex].num - 1
     var sum = this.state.sumMonney - cartList[index].price;
     cartList[index].sum -= cartList[index].price;
@@ -362,7 +363,7 @@ class Index extends Component {
       Taro.setStorageSync('sumMonney', this.state.sumMonney);
       Taro.setStorageSync('cupNumber', this.state.cupNumber);
       Taro.navigateTo({
-        url: '../order/balance/balance?model=' + this.state.model + "&appointTime=" + this.state.appointTime
+        url: '/pages/order/balance?model=' + this.state.model + "&appointTime=" + this.state.appointTime
       })
     }
   }
@@ -388,7 +389,7 @@ class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const { listData, activeIndex } = this.state
+    const { listData, activeIndex, sumMonney, cartList, toView, scrollTop, loading, cupNumber, showModalStatus, currentIndex, currentType, sugar, sugarIndex, tem, temIndex, sizeEx, showCart } = this.state
     return (
       <View className='index'>
         {/* 左侧菜单 */}
@@ -396,7 +397,7 @@ class Index extends Component {
           {
             listData.map((item, index) => {
               return (
-                <View key="unique" className={`${index === activeIndex ? 'list-left-menu-box-selected' : 'list-left-menu-box-unselect'}`} data-index="{{index}}" onClick={this.selectMenu}>
+                <View key="unique" className={`${index === activeIndex ? 'list-left-menu-box-selected' : 'list-left-menu-box-unselect'}`} data-index={index} onClick={this.selectMenu}>
                   <View className="list-menu-name">{ item.name }</View>
                 </View>
               )
@@ -405,7 +406,7 @@ class Index extends Component {
         </View>
 
         {/* 右侧菜单 */}
-        <ScrollView scrollY={true} style='height:{{scrollH}}rpx;' onScroll={this.scroll} scrollIntoView={this.state.toView} scrollTop={this.state.scrollTop}>
+        <ScrollView scrollY={true} style='height:{{scrollH}}px;' onScroll={this.scroll} scrollIntoView={toView} scrollTop={scrollTop}>
           {
             listData.map((item, index) => {
               return (
@@ -420,10 +421,10 @@ class Index extends Component {
                           </View>
                           <View className='issue-name'>
                             <View>{ items.name }</View>
-                            <View style='margin-top:20rpx;color:#F05A86'>
+                            <View style='margin-top:20px;color:#F05A86'>
                               ¥ { items.price }.00
 
-                              <Text className="iconfont icon-jiahao2fill plus-icon fr" data-type="index" data-index="indexs" onClick={this.selectInfo}></Text>
+                              <Text className="iconfont icon-jiahao2fill plus-icon fr" data-type={index} data-index={indexs} onClick={this.selectInfo}></Text>
                               {
                                 items.num > 0 &&
                                 <Text className="fr pl">{ items.num }</Text>
@@ -445,57 +446,57 @@ class Index extends Component {
         </ScrollView>
         {/* 底部操作菜单 */}
         {
-          this.state.loading &&
+          loading &&
           <View className="operate-bar">
             <View className='gouwuche'>
               <View style='padding:5px;display:flex'>
-                <Text className="iconfont icon-gouwuchefill gouwuche-icon {{sumMonney!=0?'activity-color':'' }}" onClick={this.showCartList}>
+                <Text className={`iconfont icon-gouwuchefill gouwuche-icon ${sumMonney !== 0 ? 'activity-color' : '' }`} onClick={this.showCartList}>
                   {
-                    this.state.cartList.length !== 0 &&
-                    <Text className="number-msg">{ this.state.cupNumber }</Text>
+                    cartList.length !== 0 &&
+                    <Text className="number-msg">{ cupNumber }</Text>
                   }
                 </Text>
                 {
-                  this.state.sumMonney === 0 ?
+                  sumMonney === 0 ?
                   <View className='gouwuche-price'>购物车是空的</View> :
-                  <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { this.state.sumMonney }.00</View>
+                  <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { sumMonney }.00</View>
                 }
               </View>
             </View>
-            <View className="submit-btn {{sumMonney!=0?'activity-color-bg':'' }}" onClick={this.goBalance}>
-              <View className="submit-btn-label {{sumMonney!=0?'color-white':'' }}">选好了</View>
+            <View className={`submit-btn ${sumMonney !== 0 ? 'activity-color-bg' : '' }`} onClick={this.goBalance}>
+              <View className={`submit-btn-label ${sumMonney!=0?'color-white':'' }`}>选好了</View>
             </View>
           </View>
         }
         {/* 选择弹窗 */}
         {
-          this.state.showModalStatus &&
+          showModalStatus &&
           <View className="drawer_screen" onClick={this.closeModal} data-statu="close"></View>
         }
         {
-          this.state.showModalStatus &&
+          showModalStatus &&
           <View className="drawer_box_ad">
           <View className="drawer_content_ad">
-            <View style='font-size:16px;display:flex;justify-content:center;'> { this.state.listData[this.state.currentType].foods[this.state.currentIndex].name } </View>
+            <View style='font-size:16px;display:flex;justify-content:center;'> { listData[currentType].foods[currentIndex].name } </View>
             <View className="select-line-nav">加料</View>
             <View style='display:flex'>
               {
-                this.state.listData[this.state.currentType].foods[this.state.currentIndex].size.map(item => <View className={`select-tab ${item.packing_fee==1?'select-active':''}`} key="unique" data-type='0' data-index='index' onClick={this.chooseSE}>{ item.specs }</View>)
+                listData[currentType].foods[currentIndex].size.map((item, index) => <View className={`select-tab ${item.packing_fee==1?'select-active':''}`} key="unique" data-type='0' data-index={index} onClick={this.chooseSE}>{ item.specs }</View>)
               }
             </View>
             <View className="select-line-nav">糖度</View>
             <View className='display:flex'>
               {
-                this.state.sugar.map((item, index) => <View className={`select-tab ${index== this.state.sugarIndex?'select-active':''}`} key="unique" onClick={this.chooseSE} data-type='1' data-index={index}>{{item}}</View>)
+                sugar.map((item, index) => <View className={`select-tab ${index== sugarIndex?'select-active':''}`} key="unique" onClick={this.chooseSE} data-type='1' data-index={index}>{item}</View>)
               }
             </View>
             <View  className="select-line-nav">温度</View>
             <View style='display:flex'>
               {
-                this.state.tem.map((item, index) => <View className={`select-tab ${index === this.state.temIndex ? 'select-active' : ''}`} key="unique" onClick={this.chooseSE} data-type='2' data-index={index}>{ item }</View>)
+                tem.map((item, index) => <View className={`select-tab ${index === temIndex ? 'select-active' : ''}`} key="unique" onClick={this.chooseSE} data-type='2' data-index={index}>{ item }</View>)
               }
             </View>
-            <View className="select-price">¥{ this.state.listData[this.state.currentType].foods[this.state.currentIndex].price + this.state.sizeEx }.00
+            <View className="select-price">¥{ listData[currentType].foods[currentIndex].price + sizeEx }.00
               <Button className="btn-putIn" onClick={this.addToCart}>加入购物车</Button>
             </View>
           </View>
@@ -503,11 +504,11 @@ class Index extends Component {
         }
         {/* 购物车 */}
         {
-          this.state.showCart &&
+          showCart &&
           <View className="drawer_screen" onClick={this.showCartList} data-statu="close"></View>
         }
         {
-          this.state.showCart &&
+          showCart &&
           <View className="cartlist-float">
             <View style='background:#F0F0F0;height:30px'>
               <Text className='label-cart-bar'>
@@ -518,9 +519,9 @@ class Index extends Component {
                 <Text className="label-clear">清空购物车</Text>
               </Text>
             </View>
-            <ScrollView scrollY={true} className={`${this.state.cartList.length>5?'cart-scroll-list':''}`}>
+            <ScrollView scrollY={true} className={`${cartList.length > 5 ? 'cart-scroll-list' : ''}`}>
               {
-                this.state.cartList.map((item, index) => {
+                cartList.map((item, index) => {
                   return (
                     <View className='cart-list-box' key="unique" style='border-bottom:1px #E3E3E3 solid'>
                       <View className='list-info'>

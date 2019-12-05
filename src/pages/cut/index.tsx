@@ -186,7 +186,7 @@ class Index extends Component {
                       </Text>
                       { item.detail.typeDes }
                     </View>
-                    <View style="padding:5px;font-size:24rpx;">
+                    <View style="padding:5px;font-size:24px;">
                       有效期至： { item.detail.endDate }
                     </View>
                     <View>

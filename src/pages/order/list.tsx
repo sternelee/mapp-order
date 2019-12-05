@@ -171,8 +171,8 @@ getMyAppoint = () => {
       <View className='index'>
         <View className='go-center' style='margin-top:10px'>
           <View className='tab-box'>
-            <View onClick={this.changeTab}  data-index="0" className={`go-center ${tabIndex==0?'active-color':'unactive-color'}`} style='width:50%;height:60rpx;line-height:60rpx;'>即时订单</View>
-            <View onClick={this.changeTab} data-index="1" className={`go-center ${tabIndex==1?'active-color':'unactive-color'}`} style='width:50%;height:60rpx;line-height:60rpx;'>我的预约</View>
+            <View onClick={this.changeTab}  data-index="0" className={`go-center ${tabIndex==0?'active-color':'unactive-color'}`} style='width:50%;height:60px;line-height:60px;'>即时订单</View>
+            <View onClick={this.changeTab} data-index="1" className={`go-center ${tabIndex==1?'active-color':'unactive-color'}`} style='width:50%;height:60px;line-height:60px;'>我的预约</View>
           </View>
         </View>
         {/* 订单 */}
@@ -196,11 +196,11 @@ getMyAppoint = () => {
                     <View className='detail'>
                       <View style='padding:5px'>
                         {item.cartList[0].name}
-                        <Text style="font-size:28rpx;color:#333">({item.cartList[0].detail})</Text>
+                        <Text style="font-size:28px;color:#333">({item.cartList[0].detail})</Text>
                       </View>
                       {
                         item.carList.length === 1 &&
-                        <View style='padding:5px;font-size:30rpx;color:#333' key="unique">({item.cartList[0].detail})</View>
+                        <View style='padding:5px;font-size:30px;color:#333' key="unique">({item.cartList[0].detail})</View>
                       }
                       { item.carList.length === 1 &&
                         <View style='padding:5px' key="unique"> 等{item.cupNumber}杯饮品</View>
@@ -210,7 +210,7 @@ getMyAppoint = () => {
                   {
                     tabIndex === 1 &&
                     <View style='text-align:right;margin-right:25px;color:#FF9C35;border-bottom:1px solid #e3e3e3;'>
-                      <Text style='font-size:28rpx;color:#333;float:left;padding-left:10px'>预约时间:{item.appointTime}</Text>
+                      <Text style='font-size:28px;color:#333;float:left;padding-left:10px'>预约时间:{item.appointTime}</Text>
                       <Text style='font-size:16px;'>¥ {item.sumMoney}.00</Text>
                     </View>
                   }

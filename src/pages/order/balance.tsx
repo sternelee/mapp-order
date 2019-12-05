@@ -130,7 +130,7 @@ class Index extends Component {
     var total = that.state.sumMonney - that.state.cutMonney
 
     Taro.request({
-      url: apiHost + '/TaroPay?openid=' + Taro.getStorageSync('openId'),
+      url: apiHost + '/wxPay?openid=' + Taro.getStorageSync('openId'),
       method: 'POST',
       data:{
         "nonce_str": nonce+"a"+ total

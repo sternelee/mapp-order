@@ -2,9 +2,11 @@ import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Button, Text, Image, Swiper, SwiperItem, ScrollView, PickerView, PickerViewColumn } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import IconFont from '@components/iconfont'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { apiHost } from '@api/request'
+import { get as globalGet, set as globalSet } from '@store/global'
 
 import './index.styl'
 
@@ -89,7 +91,8 @@ class Index extends Component {
     isiphonex:false,
     isAppoint:false,
     sleep:false,
-    appointTime:""
+    appointTime:"",
+    appointValue: [12, 21]
   }
 
   animation: Taro.Animation
@@ -98,23 +101,107 @@ class Index extends Component {
     console.log(this.props, nextProps)
   }
 
-  componentDidMount () {
-    // var that = this;
-    // Taro.getUserInfo({
-    //   success: function (res2) {
-    //     that.getReduction()
-    //   },
-    //   fail:function(res2){
+  componentWillMount  () {
+    var that = this;
+    // Taro.login({
+    //   success: res => {
+    //     console.log(res.code)
+    //     let openId = Taro.getStorageSync('openId')
+    //     Taro.request({
+    //       url: apiHost + '/getUserOpenId?code=' + res.code,
+    //       success: res => {
+    //         console.log(res)
+    //         openId = res.data.msg.openid;
+    //         var session_key = res.data.msg.session_key
+    //         Taro.setStorageSync('openId', openId);
+    //         Taro.setStorageSync('session_key', session_key);
+    //         //openID获取成功则首次拉取用户信息 保存本地
+    //         let userInfo = Taro.getStorageSync('userInfo')
+    //         if (!userInfo) {
+    //           Taro.getUserInfo({
+    //             success: function (res2) {
+    //               var userInfo: any = res2.userInfo
+    //               userInfo.openId = openId
+    //               Taro.setStorageSync('userInfo', res2.userInfo);
+    //               //用户信息获取成功 则开始首次用户注册
+    //               Taro.request({
+    //                 url: apiHost +'/register', //注册
+    //                 method: 'POST',
+    //                 data: userInfo,
+    //                 dataType: 'json',
+    //                 header: {
+    //                   'content-type': 'application/json'
+    //                 },
+    //                 success: function (res) {
+    //                   console.log(res.data)
+    //                 }
+    //               })
+    //             },
+    //             fail: function (err) {
+    //               Taro.showModal({
+    //                 title: '一键注册',
+    //                 content: '欢迎使用奈茶水峰自助点餐服务,请进入[个人中心]，完成一键注册',
+    //                 showCancel: false,
+    //                 success: function (res) {
+    //                   if (res.confirm) {
+    //                     Taro.navigateTo({
+    //                       url: '../mine/mine'
+    //                     })
+    //                   }
+    //                 }
+    //               })
+    //             }
+    //           })
+    //         } else {
+    //           Taro.request({
+    //             url: apiHost+'/login?openId=' + Taro.getStorageSync('openId'), //登录
+    //             header: {
+    //               'content-type': 'application/json'
+    //             },
+    //             success: function (res) {
+    //               console.log(res.data)
+    //             }
+    //           })
+    //         }
+    //       }
+    //     })
     //   }
     // })
-    // this.getShopTime()
-    // // this.getReduction()
-    // var sysinfo = Taro.getSystemInfoSync().windowHeight;
-    // if (sysinfo>700){
-    //   this.setState({
-    //     isiphonex:true
-    //   })
-    // }
+    Taro.getSetting({
+      success: res => {
+        if (res.authSetting['scope.userInfo']) {
+          // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
+          Taro.getUserInfo({
+            success: res => {
+              // 可以将 res 发送给后台解码出 unionId
+              globalSet('userInfo', res.userInfo)
+              // this.userInfo = res.userInfo
+              // console.log(this.globalData.userInfo)
+              // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
+              // 所以此处加入 callback 以防止这种情况
+              // if (this.userInfoReadyCallback) {
+              //   this.userInfoReadyCallback(res)
+              // }
+            }
+          })
+        }
+      }
+    })
+    // Taro.getUserInfo({
+    //   success: function () {
+    //     that.getReduction()
+    //   },
+    //   fail:function(){
+    //   }
+    // })
+    this.getShopTime()
+    // this.getReduction()
+    var sysinfo = Taro.getSystemInfoSync().windowHeight;
+    if (sysinfo>700){
+      this.setState({
+        isiphonex:true
+      })
+    }
   }
 
   componentWillUnmount () { }
@@ -199,18 +286,18 @@ class Index extends Component {
   }
   goOrderlist () {
     Taro.navigateTo({
-      url: '../order/list/list'
+      url: '/pages/order/list'
     })
   }
   goMine () {
     Taro.navigateTo({
-      url: '../mine/mine'
+      url: '/pages/mine/mine'
     })
   }
   letAppoint () {
     this.setState({
       isAppoint:true,
-        showAppointStatus: true
+      showAppointStatus: true
     })
   }
   //获取可领的优惠券列表
@@ -291,14 +378,14 @@ class Index extends Component {
   }
   closeAP () {
     this.setState({
-        isAppoint:false,
-        showAppointStatus:false
-      })
+      isAppoint:false,
+      showAppointStatus:false
+    })
   }
   //预约点单
   goAppoint (time) {
     Taro.navigateTo({
-      url: '../list/list?model=1&appointTime=' + this.state.appointTime
+      url: '/pages/list/index?model=1&appointTime=' + this.state.appointTime
     })
   }
   util (currentStatu) {
@@ -366,13 +453,16 @@ class Index extends Component {
   }
 
   render () {
-    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime } = this.state
+    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime, logo, appointValue } = this.state
     return (
       <View className='index'>
-
         <View className='topTitle'>
-          <Image src='../../assets/images/logo.png' className='top'></Image>
-          <Image onClick={this.goMine} className='mine' src='../../assets/images/mine.png'></Image>
+          <View className='top'>
+            <IconFont name="meishi" size={160}></IconFont>
+          </View>
+          <View className='mine' onClick={this.goMine}>
+            <IconFont name="mifan1" size={60}></IconFont>
+          </View>
         </View>
 
         {/* 顶部轮播图 */}
@@ -384,63 +474,63 @@ class Index extends Component {
 
         <View className={`oplist ${isiphonex ? "op-iphoenx"  :""}`}>
           <View className='oplist-item op-border' onClick={this.golist}>
-            <View>
-              <Image src='../../assets/images/list.png'></Image>
+            <View className='img'>
+              <IconFont name="mifan" size={60}></IconFont>
             </View>
             <View className='name'>
               <Text>自助点餐</Text>
             </View>
-            <Text>点击进入</Text>
+            <Text className='a'>点击进入</Text>
           </View>
           <View className='oplist-item op-border' onClick={this.letAppoint}>
-            <View>
-              <Image src='../../assets/images/appoint.png'></Image>
+            <View className='img'>
+              <IconFont name="shizhong1" size={60}></IconFont>
             </View>
             <View className='name'>
               <Text>预约取餐</Text>
             </View>
-            <Text>点击进入</Text>
+            <Text className='a'>点击进入</Text>
           </View>
           <View className='oplist-item' onClick={this.goOrderlist}>
-            <View>
-              <Image src='../../assets/images/order.png'></Image>
+            <View className='img'>
+              <IconFont name="tubiaozhizuomoban" size={60}></IconFont>
             </View>
             <View className='name'>
               <Text>订单列表</Text>
             </View>
-            <Text>点击进入</Text>
+            <Text className='a'>点击进入</Text>
           </View>
         </View>
 
         {/* 操作按钮 */}
-        <View className='btn-bar'>
-          <Image src="{{logo}}" className='logo' />
-          <View className='btn-block' style='padding-top: 80rpx;' onClick={this.golist}>
+        {/* <View className='btn-bar'>
+          <Image src={logo} className='logo' />
+          <View className='btn-block' style='padding-top: 80px;' onClick={this.golist}>
             <Button className="btn_op1">
               <Text className="iconfont icon-wode" style="padding-right:10px"></Text>自助点单</Button>
           </View>
-          <View className='btn-block' style=' padding-top: 30rpx; ' >
+          <View className='btn-block' style=' padding-top: 30px; ' >
             <Button className="btn_op2">
               <Text className="iconfont icon-dingdan" style="padding-right:10px"></Text>预约点单</Button>
           </View>
-        </View>
+        </View> */}
 
         {/* 中部广告 */}
         <View className="ad-box">
-          <Image src='../../assets/images/2-1.jpg' className="image_ad"></Image>
+          <Image src={require('../../assets/images/2-1.jpg')} className="image_ad"></Image>
         </View>
 
         {/* 底部横向滑动box */}
         <View className='bottom-box'>
           <ScrollView scrollX={true} className="scroll-box">
             <View className='slide-inline-box'>
-              <Image src='../../assets/images/bottom_1.png' className='bottom-image'></Image>
+              <Image src={require('../../assets/images/bottom_1.png')} className='bottom-image'></Image>
             </View>
             <View className='slide-inline-box'>
-              <Image src='../../assets/images/bottom_2.png' className='bottom-image'></Image>
+              <Image src={require('../../assets/images/bottom_2.png')} className='bottom-image'></Image>
             </View>
             <View className='slide-inline-box'>
-              <Image src='../../assets/images/bottom_3.png' className='bottom-image'></Image>
+              <Image src={require('../../assets/images/bottom_3.png')} className='bottom-image'></Image>
             </View>
           </ScrollView>
         </View>
@@ -452,7 +542,7 @@ class Index extends Component {
         {
           showSleepStatus &&
           <View className="sleep">
-            <Image src='../../assets/images/sleep.png'></Image>
+            <Image src={require('../../assets/images/sleep.png')}></Image>
           </View>
         }
 
@@ -463,7 +553,7 @@ class Index extends Component {
         }
         {
           showAdStatus &&
-          <Image  className='logor' src='../../assets/images/logor.png'></Image>
+          <Image  className='logor' src={require('../../assets/images/logor.png')}></Image>
         }
         {
           showAdStatus &&
@@ -537,10 +627,10 @@ class Index extends Component {
             请选择预约取餐时间
             <View onClick={this.goAppoint}>确定</View>
           </View>
-          <PickerView indicatorStyle="height: 50px;text-align:center" style="width: 100%; height: 300px;background:white" value={[]} onChange={this.bindPickerChange}>
+          <PickerView indicatorStyle="height: 50px;text-align:center" style="width: 100%; height: 300px;background:white" value={appointValue} onChange={this.bindPickerChange}>
             <PickerViewColumn>
               {
-                array.map((item, index) => <View style="line-height: 50px;text-align:center">{item}</View>)
+                array.map((item, index) => <View key={index} style="line-height: 50px;text-align:center">{item}</View>)
               }
             </PickerViewColumn>
           </PickerView>

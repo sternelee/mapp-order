@@ -32,7 +32,8 @@ class App extends Component {
       'pages/cut/index',
       'pages/order/list',
       'pages/order/balance',
-      'pages/order/detail'
+      'pages/order/detail',
+      'pages/mine/index'
     ],
     window: {
       backgroundTextStyle: 'light',

@@ -86,7 +86,7 @@ class Index extends Component {
     showSleepStatus:false,
     showAppointStatus: false,
     adleft: "7%",
-    array: [],
+    timeRange: [],
     reList: [],
     isiphonex:false,
     isAppoint:false,
@@ -194,7 +194,6 @@ class Index extends Component {
     //   fail:function(){
     //   }
     // })
-    this.getShopTime()
     // this.getReduction()
     var sysinfo = Taro.getSystemInfoSync().windowHeight;
     if (sysinfo>700){
@@ -206,7 +205,9 @@ class Index extends Component {
 
   componentWillUnmount () { }
 
-  componentDidShow () { }
+  componentDidShow () {
+    this.getShopTime()
+   }
 
   componentDidHide () { }
   //自助点单
@@ -217,71 +218,57 @@ class Index extends Component {
         })
     }else{
       Taro.navigateTo({
-        url: '../list/index?model=0'
+        url: '/pages/list/index?model=0'
       })
     }
   }
-  getShopTime (){
-    var that = this;
-    Taro.showLoading()
-    //获取我的订单
-    Taro.request({
-      url: apiHost+'/getShopTime?openid=' + Taro.getStorageSync('openId'),
-      method: 'GET',
-      data: {},
-      header: {
-        'Accept': 'application/json'
-      },
-      success: function (res) {
-        var openTime = res.data.data.openTime
-        var closeTime = res.data.data.closeTime
-        var timeRange: string[] = [];
-        var d = new Date();
-        var now_h = d.getHours()
-        var now_m = d.getMinutes()
-        console.log(now_h)
-        //当处于9:00以前 22:00以后时
-        if (now_h < openTime || now_h > closeTime-1) {
-          // that.setState({
-          //   sleep:true
-          // })
-          //从9点开始每隔10分钟
-          for (let i = openTime; i < closeTime; i++) {
-            for (let j = 0; j < 60; j = j + 10) {
-              if (j == 0) {
-                timeRange.push(i + ":00")
-              } else {
-                timeRange.push(i + ":" + j)
-              }
-            }
-          }
-        } else {
-          //处于营业时间则需提前半小时
-          console.log(now_m)
-          now_m = parseInt(String(now_m / 10)) + 3
-          console.log(now_m)
-          if (now_m > 5) {
-            now_m = (now_m - 6) * 10
-            console.log(now_m)
-            now_h += 1
+  getShopTime () {
+    const openTime = 9
+    const closeTime = 22
+    const timeRange: string[] = [];
+    const d = new Date();
+    let now_h = d.getHours()
+    let now_m = d.getMinutes()
+    console.log(now_h)
+    //当处于9:00以前 22:00以后时
+    if (now_h < openTime || now_h > closeTime-1) {
+      // that.setState({
+      //   sleep:true
+      // })
+      //从9点开始每隔10分钟
+      for (let i = openTime; i < closeTime; i++) {
+        for (let j = 0; j < 60; j = j + 10) {
+          if (j == 0) {
+            timeRange.push(i + ":00")
           } else {
-            now_m = now_m * 10
-          }
-          for (let i = now_h; i < closeTime; i++) {
-            for (let j = now_m; j < 60; j = j + 10) {
-              if (j == 0) {
-                timeRange.push(i + ":00")
-              } else {
-                timeRange.push(i + ":" + j)
-              }
-            }
+            timeRange.push(i + ":" + j)
           }
         }
-        that.setState({
-          array: timeRange
-        })
-        Taro.hideLoading();
       }
+    } else {
+      //处于营业时间则需提前半小时
+      console.log(now_m)
+      now_m = parseInt(String(now_m / 10)) + 3
+      console.log(now_m)
+      if (now_m > 5) {
+        now_m = (now_m - 6) * 10
+        console.log(now_m)
+        now_h += 1
+      } else {
+        now_m = now_m * 10
+      }
+      for (let i = now_h; i < closeTime; i++) {
+        for (let j = now_m; j < 60; j = j + 10) {
+          if (j == 0) {
+            timeRange.push(i + ":00")
+          } else {
+            timeRange.push(i + ":" + j)
+          }
+        }
+      }
+    }
+    this.setState({
+      timeRange: timeRange
     })
   }
   goOrderlist () {
@@ -291,7 +278,7 @@ class Index extends Component {
   }
   goMine () {
     Taro.navigateTo({
-      url: '/pages/mine/mine'
+      url: '/pages/mine/index'
     })
   }
   letAppoint () {
@@ -453,7 +440,7 @@ class Index extends Component {
   }
 
   render () {
-    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, array, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime, logo, appointValue } = this.state
+    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, timeRange, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime, logo, appointValue } = this.state
     return (
       <View className='index'>
         <View className='topTitle'>
@@ -521,7 +508,7 @@ class Index extends Component {
         </View>
 
         {/* 底部横向滑动box */}
-        <View className='bottom-box'>
+        {/* <View className='bottom-box'>
           <ScrollView scrollX={true} className="scroll-box">
             <View className='slide-inline-box'>
               <Image src={require('../../assets/images/bottom_1.png')} className='bottom-image'></Image>
@@ -533,7 +520,7 @@ class Index extends Component {
               <Image src={require('../../assets/images/bottom_3.png')} className='bottom-image'></Image>
             </View>
           </ScrollView>
-        </View>
+        </View> */}
 
         {
           showSleepStatus &&
@@ -547,14 +534,14 @@ class Index extends Component {
         }
 
         {/* 优惠券领取弹窗 */}
-        {
+        {/* {
           showAdStatus &&
           <View className="drawer_screen" data-type='1' onClick={this.powerDrawer} data-statu="close"></View>
-        }
-        {
+        } */}
+        {/* {
           showAdStatus &&
           <Image  className='logor' src={require('../../assets/images/logor.png')}></Image>
-        }
+        } */}
         {
           showAdStatus &&
           <View className="drawer_box_ad" style={{left: `${adleft}`}}>
@@ -630,7 +617,7 @@ class Index extends Component {
           <PickerView indicatorStyle="height: 50px;text-align:center" style="width: 100%; height: 300px;background:white" value={appointValue} onChange={this.bindPickerChange}>
             <PickerViewColumn>
               {
-                array.map((item, index) => <View key={index} style="line-height: 50px;text-align:center">{item}</View>)
+                timeRange.map((item, index) => <View key={index} style="line-height: 50px;text-align:center">{item}</View>)
               }
             </PickerViewColumn>
           </PickerView>

@@ -189,7 +189,7 @@ getMyAppoint = () => {
           {
             listData.map((item, index) => {
               return (
-                <View className="card" id={`a${index}`}>
+                <View className="card" id={`a${index}`} key={index}>
                   <View className='info'>
                     <Image style='border-radius:5px' src=''
                       lazyLoad></Image>

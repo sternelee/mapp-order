@@ -33,7 +33,8 @@ class App extends Component {
       'pages/order/list',
       'pages/order/balance',
       'pages/order/detail',
-      'pages/mine/index'
+      'pages/mine/index',
+      'pages/admin/index'
     ],
     window: {
       backgroundTextStyle: 'light',

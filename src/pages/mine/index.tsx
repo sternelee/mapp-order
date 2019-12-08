@@ -4,7 +4,9 @@ import { View, Button, Text, Image } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import { apiHost } from '@api/request'
+import { set as userSet } from '../../actions/user'
+import { apiHost, Api } from '@api/request'
+import { User } from '../../constants/index'
 
 import './index.styl'
 
@@ -21,13 +23,15 @@ import './index.styl'
 type PageStateProps = {
   counter: {
     num: number
-  }
+  },
+  user: User
 }
 
 type PageDispatchProps = {
   add: () => void
   dec: () => void
-  asyncAdd: () => any
+  asyncAdd: () => any,
+  userSet: (obj: object) => void
 }
 
 type PageOwnProps = {}
@@ -40,8 +44,8 @@ interface Index {
   props: IProps;
 }
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ counter, user }) => ({
+  counter, user
 }), (dispatch) => ({
   add () {
     dispatch(add())
@@ -51,25 +55,97 @@ interface Index {
   },
   asyncAdd () {
     dispatch(asyncAdd())
+  },
+  userSet (obj: object) {
+    dispatch(userSet(obj))
   }
 }))
 class Index extends Component {
   config: Config = {
     navigationBarTitleText: '我的优惠券'
   }
-  state = {
-    nickName:"",
-    avatarUrl:"",
-    phone:"",
+  componentDidMount () {
+    const that = this
+    Taro.getSetting({
+      succes: res => {
+        console.log(res)
+        if (res.authSetting['scope.userInfo']) {
+          Taro.getUserInfo({
+            success: res => {
+              console.log(res)
+              const { nickName, avatarUrl } = res.userInfo
+              that.props.userSet({
+                nickName,
+                avatarUrl
+              })
+            }
+          })
+        }
+      }
+    })
+  }
+  async getUserInfo (e) {
+    const { isLogin } = this.props.user
+    const user = e.detail.userInfo
+    console.log(user)
+    const { nickName, avatarUrl, gender } = user
+    this.props.userSet({
+      nickName,
+      avatarUrl
+    })
+    if (!isLogin) {
+      let ret = await Taro.request({
+        url: `${Api}user/create`,
+        method: 'POST',
+        data: {
+          name: nickName,
+          phone: '',
+          openid: this.props.user.openid,
+          sex: gender,
+          age: 0
+        }
+      })
+      if (ret.data) {
+        console.log('注册成功')
+      }
+    }
+  }
+  getPhoneNumber (e) {
+    const that = this
+    console.log(e)
+    // this.props.userSet({
+    //   phone: e.de
+    // })
+  }
+  bitphone () {
+    Taro.makePhoneCall({
+      phoneNumber: '18576724218'
+    })
+  }
+  gocut () {
+
+  }
+  goAdmin () {
+    Taro.navigateTo({
+      url: '/pages/admin/index'
+    })
   }
   render () {
+    const { nickName, avatarUrl, phone, isAdmin } = this.props.user
     return (
-    <View>
+      <View>
         <View className="top-mode">
-          <Button className='auth' open-type="getUserInfo" onGetUserInfo={this.getUserInfo}>一键注册</Button>
+          {
+            nickName === '' &&
+            <Button className='auth' open-type="getUserInfo" onGetUserInfo={this.getUserInfo}>一键注册</Button>
+          }
           <View className='userinfo'>
-            <Image className="userinfoclassNamevatar" src={avatarUrl}></Image>
+            <Image className="userinfo-avatar" src={avatarUrl}></Image>
             <Text style="color:white">{nickName}</Text>
+            {
+              isAdmin &&
+              <Text style="color:white; margin-top: 20px;font-weight:bolder;" onClick={this.goAdmin}>进入管理后台</Text>
+            }
           </View>
         </View>
         <View className='go-center card-box'>
@@ -80,8 +156,14 @@ class Index extends Component {
               </View>
               <View className='down-center' style='height:50%'> 
                 <Text className="iconfont icon-shouji" style="color:#B6D9A9"></Text>
-                <Text style='font-size:15px;margin-left:15px'>{phone}</Text> 
-                <Button size='mini'  type='primary' className='bindBtn' open-type="getPhoneNumber" onGetPhoneNumber={this.getPhoneNumber}>绑定手机号,以便接收更多优惠券的信息 </Button>
+                {
+                  phone !== '' &&
+                  <Text style='font-size:15px;margin-left:15px'>{phone}</Text>
+                }
+                {
+                  phone === '' &&
+                  <Button size='mini'  type='primary' className='bindBtn' open-type="getPhoneNumber" onGetPhoneNumber={this.getPhoneNumber}>绑定手机号,以便接收更多优惠券的信息 </Button>
+                }
               </View>
           </View>
         </View>

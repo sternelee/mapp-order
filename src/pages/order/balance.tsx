@@ -97,11 +97,12 @@ class Index extends Component {
     // Taro.setNavigationBarTitle({
     //   title: '订单详情'
     // })
-    // this.setData({
-    //   cartList: Taro.getStorageSync('cartList'),
-    //   sumMonney: Taro.getStorageSync('sumMonney'),
-    //   cupNumber: Taro.getStorageSync('cupNumber'),
-    // })
+    this.setState({
+      cartList: Taro.getStorageSync('cartList'),
+      sumMonney: Taro.getStorageSync('sumMonney'),
+      
+      cupNumber: Taro.getStorageSync('cupNumber'),
+    })
   }
 
   componentWillUnmount () { }

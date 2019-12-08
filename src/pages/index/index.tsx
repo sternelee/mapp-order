@@ -5,8 +5,11 @@ import { connect } from '@tarojs/redux'
 import IconFont from '@components/iconfont'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import { apiHost } from '@api/request'
+import { set as userSet } from '../../actions/user'
+import { set as pageSet } from '../../actions/page'
+import { apiHost, Api } from '@api/request'
 import { get as globalGet, set as globalSet } from '@store/global'
+import { User } from '../../constants/index'
 
 import './index.styl'
 
@@ -23,13 +26,20 @@ import './index.styl'
 type PageStateProps = {
   counter: {
     num: number
+  },
+  user: User,
+  page: {
+    openTime: number,
+    closeTime: number
   }
 }
 
 type PageDispatchProps = {
   add: () => void
   dec: () => void
-  asyncAdd: () => any
+  asyncAdd: () => any,
+  userSet: (val: object) => any,
+  pageSet: (val: object) => any
 }
 
 type PageOwnProps = {}
@@ -42,8 +52,8 @@ interface Index {
   props: IProps;
 }
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ counter, user, page }) => ({
+  counter, user, page
 }), (dispatch) => ({
   add () {
     dispatch(add())
@@ -53,6 +63,12 @@ interface Index {
   },
   asyncAdd () {
     dispatch(asyncAdd())
+  },
+  userSet (val: object) {
+    dispatch(userSet(val))
+  },
+  pageSet (val: object) {
+    dispatch(pageSet(val))
   }
 }))
 class Index extends Component {
@@ -102,103 +118,48 @@ class Index extends Component {
   }
 
   componentWillMount  () {
-    var that = this;
-    // Taro.login({
-    //   success: res => {
-    //     console.log(res.code)
-    //     let openId = Taro.getStorageSync('openId')
-    //     Taro.request({
-    //       url: apiHost + '/getUserOpenId?code=' + res.code,
-    //       success: res => {
-    //         console.log(res)
-    //         openId = res.data.msg.openid;
-    //         var session_key = res.data.msg.session_key
-    //         Taro.setStorageSync('openId', openId);
-    //         Taro.setStorageSync('session_key', session_key);
-    //         //openID获取成功则首次拉取用户信息 保存本地
-    //         let userInfo = Taro.getStorageSync('userInfo')
-    //         if (!userInfo) {
-    //           Taro.getUserInfo({
-    //             success: function (res2) {
-    //               var userInfo: any = res2.userInfo
-    //               userInfo.openId = openId
-    //               Taro.setStorageSync('userInfo', res2.userInfo);
-    //               //用户信息获取成功 则开始首次用户注册
-    //               Taro.request({
-    //                 url: apiHost +'/register', //注册
-    //                 method: 'POST',
-    //                 data: userInfo,
-    //                 dataType: 'json',
-    //                 header: {
-    //                   'content-type': 'application/json'
-    //                 },
-    //                 success: function (res) {
-    //                   console.log(res.data)
-    //                 }
-    //               })
-    //             },
-    //             fail: function (err) {
-    //               Taro.showModal({
-    //                 title: '一键注册',
-    //                 content: '欢迎使用奈茶水峰自助点餐服务,请进入[个人中心]，完成一键注册',
-    //                 showCancel: false,
-    //                 success: function (res) {
-    //                   if (res.confirm) {
-    //                     Taro.navigateTo({
-    //                       url: '../mine/mine'
-    //                     })
-    //                   }
-    //                 }
-    //               })
-    //             }
-    //           })
-    //         } else {
-    //           Taro.request({
-    //             url: apiHost+'/login?openId=' + Taro.getStorageSync('openId'), //登录
-    //             header: {
-    //               'content-type': 'application/json'
-    //             },
-    //             success: function (res) {
-    //               console.log(res.data)
-    //             }
-    //           })
-    //         }
-    //       }
-    //     })
-    //   }
-    // })
-    Taro.getSetting({
-      success: res => {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
-          Taro.getUserInfo({
-            success: res => {
-              // 可以将 res 发送给后台解码出 unionId
-              globalSet('userInfo', res.userInfo)
-              // this.userInfo = res.userInfo
-              // console.log(this.globalData.userInfo)
-              // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-              // 所以此处加入 callback 以防止这种情况
-              // if (this.userInfoReadyCallback) {
-              //   this.userInfoReadyCallback(res)
-              // }
-            }
-          })
-        }
-      }
-    })
-    // Taro.getUserInfo({
-    //   success: function () {
-    //     that.getReduction()
-    //   },
-    //   fail:function(){
-    //   }
-    // })
-    // this.getReduction()
-    var sysinfo = Taro.getSystemInfoSync().windowHeight;
-    if (sysinfo>700){
+    const height = Taro.getSystemInfoSync().windowHeight;
+    if (height > 700){
       this.setState({
         isiphonex:true
+      })
+      this.props.pageSet({isIphonex: true})
+    }
+    this.auth()
+  }
+
+  async auth () {
+    Taro.getStorage({
+      key: 'auth'
+    }).then((res: any) => {
+      this.props.userSet(res.data)
+      this.checkUse(res.data.openid)
+    }).catch(err => {
+      console.log(err)
+      Taro.login().then(res => {
+        console.log(res)
+        Taro.request({
+          url: `${Api}auth?js_code=${res.code}`
+        }).then(res => res.data)
+          .then(res => {
+            if (res.openid) {
+              Taro.setStorageSync('auth', res)
+              this.props.userSet(res)
+              this.checkUse(res.openid)
+            }
+          })
+      })
+    })
+  }
+
+  async checkUse (openid) {
+    let ret = await Taro.request({
+      url: `${Api}user/find?openid=${openid}`
+    })
+    if (ret.data && ret.data.data) {
+      this.props.userSet({
+        isLogin: true,
+        uid: ret.data.data.id
       })
     }
   }
@@ -223,8 +184,7 @@ class Index extends Component {
     }
   }
   getShopTime () {
-    const openTime = 9
-    const closeTime = 22
+    const { openTime, closeTime } = this.props.page
     const timeRange: string[] = [];
     const d = new Date();
     let now_h = d.getHours()
@@ -268,10 +228,18 @@ class Index extends Component {
       }
     }
     this.setState({
-      timeRange: timeRange
+      timeRange
     })
   }
-  goOrderlist () {
+  async goOrderlist () {
+    Taro.showLoading()
+    let ret = await Taro.request({
+      url: `${Api}user/findOrder?id=${this.props.user.uid}`
+    })
+    if (ret.data) {
+      console.log(ret.data.data)
+    }
+    Taro.hideLoading()
     Taro.navigateTo({
       url: '/pages/order/list'
     })
@@ -357,9 +325,11 @@ class Index extends Component {
     this.util(currentStatu)
   }
   bindPickerChange (e) {
-    console.log('picker发送选择改变，携带值为', this.state.array[e.detail.value])
+    const val = e.detail.value[0]
+    console.log(val)
+    console.log('picker发送选择改变，携带值为', this.state.timeRange[val])
     this.setState({
-      appointTime: this.state.array[e.detail.value]
+      appointTime: this.state.timeRange[val]
     })
     // this.goAppoint(this.state.array[e.detail.value])
   }
@@ -440,7 +410,7 @@ class Index extends Component {
   }
 
   render () {
-    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, timeRange, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointTime, logo, appointValue } = this.state
+    const { indicatorDots, autoplay, interval, duration, imgUrls, isiphonex, reList, timeRange, adleft, showSleepStatus, showAdStatus, showAppointStatus, isAppoint, appointValue } = this.state
     return (
       <View className='index'>
         <View className='topTitle'>
@@ -503,9 +473,9 @@ class Index extends Component {
         </View> */}
 
         {/* 中部广告 */}
-        <View className="ad-box">
+        {/* <View className="ad-box">
           <Image src={require('../../assets/images/2-1.jpg')} className="image_ad"></Image>
-        </View>
+        </View> */}
 
         {/* 底部横向滑动box */}
         {/* <View className='bottom-box'>

@@ -5,6 +5,7 @@ import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { apiHost } from '@api/request'
+import IconFont from '@components/iconfont'
 
 import './index.styl'
 
@@ -64,7 +65,8 @@ class Index extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '好好快餐'
+    navigationBarTitleText: '好好快餐',
+    disableScroll: true
   }
 
   state = {
@@ -116,19 +118,11 @@ class Index extends Component {
   }
 
   getList() {
-    var that = this;
-    var sysinfo = Taro.getSystemInfoSync().windowHeight;
-    console.log(sysinfo)
+    const that = this;
+    Taro.getSystemInfo().then(res => console.log(res))
+    const scrollH = Taro.getSystemInfoSync().screenHeight;
+    console.log(scrollH)
     Taro.showLoading()
-    let offsetS = 120
-    //兼容iphoe5滚动
-    if (sysinfo < 550) {
-      offsetS = -40
-    }
-    //兼容iphoe Plus滚动
-    if (sysinfo > 650 && sysinfo < 700) {
-      offsetS = 240
-    }
     Taro.request({
       url: apiHost + '/getfoodList',
       method: 'GET',
@@ -147,7 +141,7 @@ class Index extends Component {
           scrollArr: scrollArr,
           listData: res.data.data,
           loading: true,
-          scrollH: sysinfo * 2 - offsetS
+          scrollH
         })
         Taro.hideLoading();
       }
@@ -389,7 +383,7 @@ class Index extends Component {
   componentDidHide () { }
 
   render () {
-    const { listData, activeIndex, sumMonney, cartList, toView, scrollTop, loading, cupNumber, showModalStatus, currentIndex, currentType, sugar, sugarIndex, tem, temIndex, sizeEx, showCart } = this.state
+    const { listData, activeIndex, sumMonney, cartList, toView, scrollTop, loading, cupNumber, showModalStatus, currentIndex, currentType, sugar, sugarIndex, tem, temIndex, sizeEx, showCart, scrollH } = this.state
     return (
       <View className='index'>
         {/* 左侧菜单 */}
@@ -406,11 +400,11 @@ class Index extends Component {
         </View>
 
         {/* 右侧菜单 */}
-        <ScrollView scrollY={true} style='height:{{scrollH}}px;' onScroll={this.scroll} scrollIntoView={toView} scrollTop={scrollTop}>
+        <ScrollView scrollY={true} style={{height: `${scrollH}px`}} onScroll={this.scroll} scrollIntoView={toView} scrollTop={scrollTop}>
           {
             listData.map((item, index) => {
               return (
-                <View className="content" id={`a${index}`} key="unique">
+                <View className="content" id={`a${index}`} key={index}>
                   <View className='list-tab'>{ item.name }</View>
                   {
                     item.foods.map((items, indexs) => {
@@ -422,9 +416,12 @@ class Index extends Component {
                           <View className='issue-name'>
                             <View>{ items.name }</View>
                             <View style='margin-top:20px;color:#F05A86'>
-                              ¥ { items.price }.00
-
-                              <Text className="iconfont icon-jiahao2fill plus-icon fr" data-type={index} data-index={indexs} onClick={this.selectInfo}></Text>
+                              <View data-type={index} data-index={indexs} onClick={this.selectInfo} style="display: flex;">
+                                <Text style="margin-right: 20px;">
+                                  ¥ { items.price }.00
+                                </Text>
+                                <IconFont name="jiahao" size={40} />
+                              </View>
                               {
                                 items.num > 0 &&
                                 <Text className="fr pl">{ items.num }</Text>
@@ -448,20 +445,17 @@ class Index extends Component {
         {
           loading &&
           <View className="operate-bar">
-            <View className='gouwuche'>
-              <View style='padding:5px;display:flex'>
-                <Text className={`iconfont icon-gouwuchefill gouwuche-icon ${sumMonney !== 0 ? 'activity-color' : '' }`} onClick={this.showCartList}>
-                  {
-                    cartList.length !== 0 &&
-                    <Text className="number-msg">{ cupNumber }</Text>
-                  }
-                </Text>
+            <View className='gouwuche' onClick={this.showCartList}>
+              <IconFont name="ziyuan" size={60} />
                 {
-                  sumMonney === 0 ?
-                  <View className='gouwuche-price'>购物车是空的</View> :
-                  <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { sumMonney }.00</View>
+                  cartList.length !== 0 &&
+                  <Text className="number-msg">{ cupNumber }</Text>
                 }
-              </View>
+                {
+                sumMonney === 0 ?
+                <View className='gouwuche-price'>购物车是空的</View> :
+                <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { sumMonney }.00</View>
+              }
             </View>
             <View className={`submit-btn ${sumMonney !== 0 ? 'activity-color-bg' : '' }`} onClick={this.goBalance}>
               <View className={`submit-btn-label ${sumMonney!=0?'color-white':'' }`}>选好了</View>

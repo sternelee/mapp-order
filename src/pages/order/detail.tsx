@@ -174,8 +174,8 @@ class Index extends Component {
                     <View>{item.name}</View>
                     <View className='list-info-size'>{item.detail}</View>
                   </View>
-                  <View style='width:50%;padding:10px;'>
-                    <View style='float:right'>
+                  <View style='width:10%;padding:10px;'>
+                    <View style='font-size: 10px'>
                       <View style='color:#A3A3A3'>x {item.number}</View>
                       <View>¥ {item.sum}.00</View>
                     </View>

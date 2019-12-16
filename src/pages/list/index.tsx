@@ -415,7 +415,8 @@ class Index extends Component {
                           </View>
                           <View className='issue-name'>
                             <View>{ items.name }</View>
-                            <View style='margin-top:20px;color:#F05A86'>
+                            <View className="food-desc">菜单介绍菜单介绍菜单介绍菜单介绍菜单介绍菜单介绍2333</View>
+                            <View className="food-edit">
                               <View data-type={index} data-index={indexs} onClick={this.selectInfo} style="display: flex;">
                                 <Text style="margin-right: 20px;">
                                   ¥ { items.price }.00
@@ -446,15 +447,17 @@ class Index extends Component {
           loading &&
           <View className="operate-bar">
             <View className='gouwuche' onClick={this.showCartList}>
-              <IconFont name="ziyuan" size={60} />
-                {
-                  cartList.length !== 0 &&
-                  <Text className="number-msg">{ cupNumber }</Text>
-                }
-                {
-                sumMonney === 0 ?
-                <View className='gouwuche-price'>购物车是空的</View> :
-                <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { sumMonney }.00</View>
+              <View className="gouwuche-icon">
+                <IconFont name="ziyuan" size={60} />
+              </View>
+              {
+                cartList.length !== 0 &&
+                <Text className="number-msg">{ cupNumber }</Text>
+              }
+              {
+              sumMonney === 0 ?
+              <View className='gouwuche-price'>购物车是空的</View> :
+              <View className='gouwuche-price' style='color:white;font-size:18px'>¥ { sumMonney }.00</View>
               }
             </View>
             <View className={`submit-btn ${sumMonney !== 0 ? 'activity-color-bg' : '' }`} onClick={this.goBalance}>

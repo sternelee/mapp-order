@@ -5,7 +5,7 @@ import Taro, { FunctionComponent } from '@tarojs/taro';
 import Icon from './h5/H5Icon';
 
 interface Props {
-  name: 'plus' | 'mifan' | 'shizhong' | 'dingcan' | 'ziyuan' | 'diancan' | 'shizhong1' | 'chufangyongpin' | 'mifan1' | 'jiahao' | 'dingcan1' | 'touxiang' | 'diancanma' | 'fan' | 'tubiaozhizuomoban' | 'meishi';
+  name: 'plus' | 'mifan' | 'shizhong' | 'dingcan' | 'ziyuan' | 'diancan' | 'shizhong1' | 'chufangyongpin' | 'mifan1' | 'jiahao' | 'weixinzhifu1' | 'dingcan1' | 'touxiang' | 'diancanma' | 'fan' | 'tubiaozhizuomoban' | 'meishi';
   size?: number;
   color?: string | string[];
 }

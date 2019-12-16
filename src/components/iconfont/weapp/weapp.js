@@ -1,6 +1,6 @@
 Component({
   properties: {
-    // plus | mifan | shizhong | dingcan | ziyuan | diancan | shizhong1 | chufangyongpin | mifan1 | jiahao | dingcan1 | touxiang | diancanma | fan | tubiaozhizuomoban | meishi
+    // plus | mifan | shizhong | dingcan | ziyuan | diancan | shizhong1 | chufangyongpin | mifan1 | jiahao | weixinzhifu1 | dingcan1 | touxiang | diancanma | fan | tubiaozhizuomoban | meishi
     name: {
       type: String,
     },

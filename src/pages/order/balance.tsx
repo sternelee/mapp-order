@@ -5,6 +5,7 @@ import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import { apiHost } from '@api/request'
+import IconFont from '@components/iconfont'
 
 import './balance.styl'
 
@@ -233,7 +234,7 @@ class Index extends Component {
       <View className='index'>
         <View className='top-bar'>
           <Text className='top-left-label'>取餐时间</Text>
-          <Text className='top-right-label activity-color'>饮品制作中，尽快为你服务</Text>
+          <Text className='top-right-label activity-color'>美食正在制作中，尽快为你服务</Text>
           <Text className='top-right-label activity-color'>{appointTime}</Text>
         </View>
         {/* 订单详情 */}
@@ -247,8 +248,8 @@ class Index extends Component {
                     <View>{item.name}</View>
                     <View className='list-info-size'>{item.detail}</View>
                   </View>
-                  <View style='width:50%;padding:10px;'>
-                    <View style='float:right'>
+                  <View style='width:10%;padding:10px;'>
+                    <View style='font-size: 10px;'>
                       <View style='color:#A3A3A3'>x {item.number}</View>
                       <View>¥ {item.sum}.00</View>
                     </View>
@@ -278,18 +279,16 @@ class Index extends Component {
         {/* 底部操作栏 */}
         <View className="operate-bar">
           <View className='gouwuche'>
-            <View style='padding:5px;display:flex'>
-              <Text className="iconfont icon-gouwuchefill gouwuche-icon activity-color">
-                {
-                  cartList.length !== 0 &&
-                  <Text className="number-msg">{cupNumber}</Text>
-                }
-              </Text>
+            <View style='padding:5px;'>
               <View className='gouwuche-price' style='color:white;font-size:18px'>¥ {sumMonney-cutMonney}.00</View>
             </View>
           </View>
           <View className="submit-btn activity-color-bg" onClick={this.gopay}>
             <View className="submit-btn-label color-white">去支付</View>
+            {
+              cartList.length !== 0 &&
+              <Text className="number-msg">{cupNumber}</Text>
+            }
           </View>
         </View>
       </View>
